@@ -94,4 +94,137 @@ public class PacienteDAO {
 		Alerts.showAlert("Login inválido", null, "Tente novamente!", AlertType.ERROR);
 		return false;
 	}
+
+	public void editarDado(String campoSelecionado, String dadoNovo) {
+		String url = "jdbc:mysql://localhost:3306/hospital";
+		String username = "root";
+		String password = "86779791";
+
+		if (campoSelecionado == "nome") {
+			String updateQuery = "UPDATE pacientes SET nome = ? WHERE cpf = ?";
+			try (Connection connection = DriverManager.getConnection(url, username, password);
+					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+				preparedStatement.setString(1, dadoNovo);
+				preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
+
+				int rowsAffected = preparedStatement.executeUpdate();
+
+				if (rowsAffected > 0) {
+					Alerts.showAlert("Sucesso!", "Edição realizada com sucesso!", "", AlertType.CONFIRMATION);
+					// labelMensagem.setText("Edição realizada com sucesso!");
+				} else {
+					Alerts.showAlert("Erro!", "Erro ao editar dados!", "Tente novamente!", AlertType.ERROR);
+					// labelMensagem.setText("Falha ao editar.");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				// labelMensagem.setText("Erro ao editar.");
+			}
+			return;
+		}
+
+		else if (campoSelecionado == "idade") {
+			String updateQuery = "UPDATE pacientes SET idade = ? WHERE cpf = ?";
+			try (Connection connection = DriverManager.getConnection(url, username, password);
+					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+				preparedStatement.setString(1, dadoNovo);
+				preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
+
+				int rowsAffected = preparedStatement.executeUpdate();
+
+				if (rowsAffected > 0) {
+					Alerts.showAlert("Sucesso!", "Edição realizada com sucesso!", "", AlertType.CONFIRMATION);
+					// labelMensagem.setText("Edição realizada com sucesso!");
+				} else {
+					Alerts.showAlert("Erro!", "Erro ao editar dados!", "Tente novamente!", AlertType.ERROR);
+					// labelMensagem.setText("Falha ao editar.");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				// labelMensagem.setText("Erro ao editar.");
+			}
+			return;
+		} else if (campoSelecionado == "plano") {
+			String updateQuery = "UPDATE pacientes SET plano = ? WHERE cpf = ?";
+			try (Connection connection = DriverManager.getConnection(url, username, password);
+					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+				preparedStatement.setString(1, dadoNovo);
+				preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
+
+				int rowsAffected = preparedStatement.executeUpdate();
+
+				if (rowsAffected > 0) {
+					Alerts.showAlert("Sucesso!", "Edição realizada com sucesso!", "", AlertType.CONFIRMATION);
+					// labelMensagem.setText("Edição realizada com sucesso!");
+				} else {
+					Alerts.showAlert("Erro!", "Erro ao editar dados!", "Tente novamente!", AlertType.ERROR);
+					// labelMensagem.setText("Falha ao editar.");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				// labelMensagem.setText("Erro ao editar.");
+			}
+			return;
+		} else if (campoSelecionado == "senha") {
+			String updateQuery = "UPDATE pacientes SET senha = ? WHERE cpf = ?";
+			try (Connection connection = DriverManager.getConnection(url, username, password);
+					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+				preparedStatement.setString(1, dadoNovo);
+				preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
+
+				int rowsAffected = preparedStatement.executeUpdate();
+
+				if (rowsAffected > 0) {
+					Alerts.showAlert("Sucesso!", "Edição realizada com sucesso!", "", AlertType.CONFIRMATION);
+					// labelMensagem.setText("Edição realizada com sucesso!");
+				} else {
+					Alerts.showAlert("Erro!", "Erro ao editar dados!", "Tente novamente!", AlertType.ERROR);
+					// labelMensagem.setText("Falha ao editar.");
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				// labelMensagem.setText("Erro ao editar.");
+			}
+			return;
+		} else if (campoSelecionado == "cpf") {
+			boolean cpfCadastrado = cpfExiste(dadoNovo);
+			if (cpfCadastrado == true) {
+				Alerts.showAlert("Erro!", "Esse CRM já está cadastrado", "", AlertType.ERROR);
+				return;
+			} else {
+				String updateQuery = "UPDATE pacientes SET cpf = ? WHERE cpf = ?";
+				try (Connection connection = DriverManager.getConnection(url, username, password);
+						PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+					preparedStatement.setString(1, dadoNovo);
+					preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
+
+					int rowsAffected = preparedStatement.executeUpdate();
+
+					if (rowsAffected > 0) {
+						Alerts.showAlert("Sucesso!", "Edição realizada com sucesso!", "", AlertType.CONFIRMATION);
+						// labelMensagem.setText("Edição realizada com sucesso!");
+					} else {
+						Alerts.showAlert("Erro!", "Erro ao editar dados!", "Tente novamente!", AlertType.ERROR);
+						// labelMensagem.setText("Falha ao editar.");
+					}
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+					// labelMensagem.setText("Erro ao editar.");
+				}
+				return;
+			}
+		} else {
+			Alerts.showAlert("Erro!", "Erro ao editar dados!", "Tente novamente!", AlertType.ERROR);
+		}
+	}
 }

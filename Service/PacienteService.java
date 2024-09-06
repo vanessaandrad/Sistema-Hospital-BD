@@ -20,4 +20,8 @@ public class PacienteService {
 	public boolean fazerLogin(String cpf, String senha) {
 		return pacienteDAO.fazerLogin(cpf, senha);
 	}
+	
+	public void editarDado(String campoSelecionado, String dadoNovo) {
+		pacienteDAO.editarDado(campoSelecionado, dadoNovo);
+	}
 }

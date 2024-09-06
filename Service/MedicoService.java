@@ -21,4 +21,8 @@ public class MedicoService {
 	public boolean fazerLogin(String crm, String senha) {
 		return medicoDAO.fazerLogin(crm, senha);
 	}
+
+	public void editarDado(String campoSelecionado, String dadoNovo) {
+		medicoDAO.editarDado(campoSelecionado, dadoNovo);
+	}
 }

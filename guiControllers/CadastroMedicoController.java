@@ -44,7 +44,7 @@ public class CadastroMedicoController {
 		String senha = textFieldSenha.getText();
 		String crm = textFieldCRM.getText();
 
-		if(nome.isEmpty() || especialidade.isEmpty() || planoAtendido.isEmpty() || senha.isEmpty() || crm.isEmpty()) {
+		if (nome.isEmpty() || especialidade.isEmpty() || planoAtendido.isEmpty() || senha.isEmpty() || crm.isEmpty()) {
 			return;
 		}
 		boolean cadastroRealizado = medicoService.realizarCadastroMedico(nome, especialidade, planoAtendido, senha,
