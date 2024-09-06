@@ -1,15 +1,19 @@
 package guiControllers;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import Service.ConsultaService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
 public class AvaliarMedicoController {
+	
+	private ConsultaService consultaService;
+
+	public AvaliarMedicoController() {
+		this.consultaService = new ConsultaService();
+	}
+	
 	@FXML
 	private Label labelPessimo;
 
@@ -114,34 +118,16 @@ public class AvaliarMedicoController {
 		estrelas = 5;
 	}
 
-	public void avaliacao() {
+	public void realizarAvaliacao() {
 		String textoAvaliacao = textAreaTextoAvaliacao.getText();
-
-		String url = "jdbc:mysql://localhost:3306/hospital";
-		String username = "developer";
-		String password = "86779791";
-
-		String updateQuery = "UPDATE consultasrealizadas " + "SET textoAvaliacao = ?, " + "estrelas = ? " + "WHERE "
-				+ "idConsulta = ?";
-		try (Connection connection = DriverManager.getConnection(url, username, password);
-				PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
-
-			preparedStatement.setString(1, textoAvaliacao);
-			preparedStatement.setDouble(2, estrelas);
-			preparedStatement.setInt(3, EscolherConsultaAvaliarController.idConsultaEscolhida);
-
-			int rowsAffected = preparedStatement.executeUpdate();
-
-			if (rowsAffected > 0) {
-				System.out.println("avaliacao c sucesso");
-			} else {
-				System.out.println("avaliacao falhou");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		
+		boolean sucesso = consultaService.avaliarConsulta(textoAvaliacao, estrelas);
+		if(sucesso == true) {
+			textAreaTextoAvaliacao.setText("");
+			labelMensagem.setText("Avaliação enviada com sucesso! Obrigado :)");
+		}else {
+			textAreaTextoAvaliacao.setText("");
+			labelMensagem.setText("Faha ao realizar avaliação. Tente novamente :(");
 		}
-
-		textAreaTextoAvaliacao.setText("");
-		labelMensagem.setText("Avaliação enviada com sucesso! Obrigado :)");
 	}
 }

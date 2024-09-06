@@ -8,16 +8,17 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import gui.util.Alerts;
+import guiControllers.EscolherConsultaAvaliarController;
 import guiControllers.TelaLoginPacienteController;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
-import javafx.scene.control.Alert.AlertType;
 import javafx.util.Callback;
 
 public class ConsultaDAO {
-	
-	public void initialize(ComboBox<String> comboBoxMedicosDisponiveis, DatePicker datePickerDatas) {
+
+	public void initializeAgendarConsulta(ComboBox<String> comboBoxMedicosDisponiveis, DatePicker datePickerDatas) {
 		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
 		String username = "root";
 		String password = "86779791";
@@ -218,5 +219,202 @@ public class ConsultaDAO {
 			datePickerDatas.setValue(null);
 		}
 		return false;
+	}
+
+	public boolean avaliarConsulta(String textoAvaliacao, double estrelas) {
+		String url = "jdbc:mysql://localhost:3306/hospital";
+		String username = "root";
+		String password = "86779791";
+
+		String updateQuery = "UPDATE consultasrealizadas " + "SET textoAvaliacao = ?, " + "estrelas = ? " + "WHERE "
+				+ "idConsulta = ?";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+			preparedStatement.setString(1, textoAvaliacao);
+			preparedStatement.setDouble(2, estrelas);
+			preparedStatement.setInt(3, EscolherConsultaAvaliarController.idConsultaEscolhida);
+
+			int rowsAffected = preparedStatement.executeUpdate();
+
+			if (rowsAffected > 0) {
+				System.out.println("avaliacao c sucesso");
+				return true;
+			} else {
+				System.out.println("avaliacao falhou");
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public void initializeCancelarConsulta(ComboBox<String> comboBoxConsultasMarcadas) {	
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String username = "root";
+		String password = "86779791";
+
+		String selectQuery = "SELECT * FROM consultas WHERE cpf_paciente = ? AND realizada = ? ";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			System.out.println(TelaLoginPacienteController.getcpfLogado() + "cancelando cons");
+			preparedStatement.setString(1, TelaLoginPacienteController.getcpfLogado());
+			preparedStatement.setString(2, "n");
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int numeroConsulta = resultSet.getInt("id");
+					String data = resultSet.getString("dataConsulta");
+					String infoConsulta = "Nº da consulta: " + numeroConsulta + " - " + data;
+					comboBoxConsultasMarcadas.getItems().addAll(infoConsulta);
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+			}
+
+		} catch (SQLException e) {
+			e.getMessage();
+		}
+	}
+
+	public String obterCrmMedico(int numeroConsulta) {
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String username = "root";
+		String password = "86779791";
+
+		String crm = null;
+
+		String selectQuery = "SELECT crm_Medico FROM consultas WHERE id = ? ";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			preparedStatement.setInt(1, numeroConsulta);
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					crm = resultSet.getString("crm_Medico");
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+			}
+		} catch (SQLException e) {
+			e.getMessage();
+		}
+		return crm;
+	}
+
+	public boolean cliqueBotaoCancelar(ComboBox<String> comboBoxConsultasMarcadas) {
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String username = "root";
+		String password = "86779791";
+
+		String consultaEscolhida = comboBoxConsultasMarcadas.getValue();
+		System.out.println(consultaEscolhida + "consulta escolhida");
+		String numeroDaConsulta = null;
+		String[] partes = consultaEscolhida.split(" - ");
+		String[] dadosConsulta = partes[0].split(": ");
+		numeroDaConsulta = dadosConsulta[1];
+
+		String cpf_paciente_espera = null;
+
+		int numConsultaDesmarcada = Integer.parseInt(numeroDaConsulta);
+		String crmMedico = obterCrmMedico(numConsultaDesmarcada);
+		System.out.println(crmMedico + "crmMedico");
+		System.out.println(numConsultaDesmarcada + "numConsultaDesmarcada");
+
+		String selectQuery = "SELECT cpf_paciente FROM consultasespera WHERE crm_Medico = ? ";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			preparedStatement.setString(1, crmMedico);
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					cpf_paciente_espera = resultSet.getString("cpf_paciente");
+					System.out.println("cpf nao nulo ");
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+				return false;
+			}
+		} catch (SQLException e) {
+			e.getMessage();
+			return false;
+		}
+
+		String deleteQueryEspera = "DELETE FROM consultasespera WHERE crm_Medico = ? AND cpf_paciente = ? ORDER BY idEspera LIMIT 1";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(deleteQueryEspera)) {
+
+			preparedStatement.setString(1, crmMedico);
+			preparedStatement.setString(2, cpf_paciente_espera);
+
+			int rowsAffected1 = preparedStatement.executeUpdate();
+
+			if (rowsAffected1 > 0) {
+				System.out.println("CONSULTAS ESPERA APAGADO C SUCESSO");
+			} else {
+				System.out.println("CONSULTAS ESPERA NAO APAGADO");
+			}
+		} catch (SQLException e) {
+			e.getMessage();
+		}
+
+		if (cpf_paciente_espera == null) {
+			String updateQuery = "DELETE FROM consultas WHERE id = ?";
+			try (Connection connection = DriverManager.getConnection(url, username, password);
+					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+				preparedStatement.setInt(1, numConsultaDesmarcada);
+
+				int rowsAffected2 = preparedStatement.executeUpdate();
+
+				if (rowsAffected2 > 0) {
+					Alerts.showAlert("Sucesso!", "Consulta desmarcada!", "", AlertType.CONFIRMATION);
+					// labelMensagem.setText("Consulta desmarcada com sucesso!");
+					System.out.println("UPDATE SIMMMMMMMMM RELAIAOD");
+					return true;
+				} else {
+					Alerts.showAlert("Erro!", "Erro ao desmarcar consulta!", "Tente novamente!", AlertType.ERROR);
+					// labelMensagem.setText("Não foi possível desmarcar a consulta. Tente
+					// novamente");
+					System.out.println("UPDATE NAAAAAAAO REALIADO");
+					return false;
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		} else {
+			String updateQuery = "UPDATE consultas SET cpf_paciente = ? WHERE id = ?";
+			try (Connection connection = DriverManager.getConnection(url, username, password);
+					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+				preparedStatement.setString(1, cpf_paciente_espera);
+				preparedStatement.setInt(2, numConsultaDesmarcada);
+
+				int rowsAffected2 = preparedStatement.executeUpdate();
+
+				if (rowsAffected2 > 0) {
+					Alerts.showAlert("Sucesso!", "Consulta desmarcada!", "", AlertType.CONFIRMATION);
+					// labelMensagem.setText("Consulta desmarcada com sucesso!");
+					System.out.println("UPDATE SIMMMMMMMMM RELAIAOD");
+					return true;
+				} else {
+					Alerts.showAlert("Erro!", "Erro ao desmarcar consulta!", "Tente novamente!", AlertType.ERROR);
+					// labelMensagem.setText("Não foi possível desmarcar a consulta. Tente
+					// novamente");
+					System.out.println("UPDATE NAAAAAAAO REALIADO");
+					return false;
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
 	}
 }

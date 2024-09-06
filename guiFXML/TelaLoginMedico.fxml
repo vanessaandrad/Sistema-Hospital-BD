@@ -15,7 +15,7 @@
 	<children>
 		<PasswordField fx:id="textFieldSenha" layoutX="140.0" layoutY="248.0" promptText="Senha" />
 		<TextField fx:id="textFieldUsuario" layoutX="140.0" layoutY="215.0" promptText="Usuário (CRM)" />
-		<Button fx:id="botaoLogin" layoutX="187.0" layoutY="296.0" mnemonicParsing="false" onAction="#fazerLogin" style="-fx-background-color: #39A7FF;" text="Entrar" textFill="WHITE">
+		<Button fx:id="botaoLogin" layoutX="187.0" layoutY="296.0" mnemonicParsing="false" onAction="#fazerLogin" onMouseClicked="#fazerLogin" style="-fx-background-color: #39A7FF;" text="Entrar" textFill="WHITE">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>

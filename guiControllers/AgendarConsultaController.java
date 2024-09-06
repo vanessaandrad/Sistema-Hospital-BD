@@ -29,7 +29,7 @@ public class AgendarConsultaController {
 
 	@FXML
 	public void initialize() {
-		consultaService.initialize(comboBoxMedicosDisponiveis, datePickerDatas);
+		consultaService.initializeAgendarConsulta(comboBoxMedicosDisponiveis, datePickerDatas);
 	}
 
 	public boolean medicoDisponivel(String nomeMedico, java.sql.Date dataEscolhida) {

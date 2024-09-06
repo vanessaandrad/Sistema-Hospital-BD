@@ -17,7 +17,7 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</ComboBox>
-		<Button fx:id="botaoCancelamento" layoutX="197.0" layoutY="288.0" mnemonicParsing="false" onAction="#cliqueBotaoCancelar" style="-fx-background-color: #39A7FF;" text="CANCELAR CONSULTA" textFill="WHITE">
+		<Button fx:id="botaoCancelamento" layoutX="197.0" layoutY="288.0" mnemonicParsing="false" onAction="#cliqueBotaoCancelar" onMouseClicked="#cliqueBotaoCancelar" style="-fx-background-color: #39A7FF;" text="CANCELAR CONSULTA" textFill="WHITE">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>
