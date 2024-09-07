@@ -1,11 +1,6 @@
 package guiControllers;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import Service.ConsultaService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +10,12 @@ import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 
 public class EscolherConsultaAvaliarController {
+
+	private ConsultaService consultaService;
+
+	public EscolherConsultaAvaliarController() {
+		this.consultaService = new ConsultaService();
+	}
 
 	@FXML
 	private ChoiceBox<String> choiceBoxConsultas;
@@ -28,34 +29,13 @@ public class EscolherConsultaAvaliarController {
 
 	@FXML
 	public void initialize() {
-		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
-		String username = "developer";
-		String password = "86779791";
-
-		String selectQuery = "SELECT * FROM consultasrealizadas WHERE cpf_paciente = ? AND estrelas = ?";
-		try (Connection connection = DriverManager.getConnection(url, username, password);
-				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-
-			preparedStatement.setString(1, TelaLoginPacienteController.getcpfLogado());
-			preparedStatement.setDouble(2, 0);
-
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				while (resultSet.next()) {
-					int idConsulta = resultSet.getInt("idConsulta");
-					Date dataConsulta = resultSet.getDate("dataConsulta");
-					String infoConsulta = "Nº consulta: " + idConsulta + " - " + "Data: " + dataConsulta;
-					choiceBoxConsultas.getItems().addAll(infoConsulta);
-				}
-			} catch (SQLException e) {
-				e.getMessage();
-			}
-
-		} catch (SQLException e) {
-			e.getMessage();
-		}
+		consultaService.initializeEscolherConsultaAvaliar(choiceBoxConsultas);
 	}
 
 	public void cliqueBotaoEscolha() {
+		// aqui não iremos colocar para o consultaDAO, pois não estamos acessando os
+		// dados
+
 		String consultaEscolhida = choiceBoxConsultas.getValue();
 		String[] parte = consultaEscolhida.split(": ");
 

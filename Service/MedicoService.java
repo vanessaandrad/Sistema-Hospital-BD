@@ -1,6 +1,11 @@
 package Service;
 
+import java.sql.Date;
+
 import DAO.MedicoDAO;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
+import model.entities.Consulta;
 
 public class MedicoService {
 	private MedicoDAO medicoDAO;
@@ -24,5 +29,15 @@ public class MedicoService {
 
 	public void editarDado(String campoSelecionado, String dadoNovo) {
 		medicoDAO.editarDado(campoSelecionado, dadoNovo);
+	}
+
+	public void cliqueBotaoGerarRelatorioConsultasRealizadas(Date inicio, Date fim, ObservableList<Consulta> lista,
+			TableView<Consulta> tableViewRelatorio) {
+		medicoDAO.cliqueBotaoGerarRelatorioConsultasRealizadas(inicio, fim, lista, tableViewRelatorio);
+	}
+
+	public void cliqueBotaoGerarRelatorioAgendamentos(Date inicio, Date fim, ObservableList<Consulta> lista,
+			TableView<Consulta> tableViewRelatorio) {
+		medicoDAO.cliqueBotaoGerarRelatorioAgendamentos(inicio, fim, lista, tableViewRelatorio);
 	}
 }

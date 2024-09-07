@@ -1,6 +1,7 @@
 package Service;
 
 import DAO.ConsultaDAO;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 
@@ -37,5 +38,13 @@ public class ConsultaService {
 
 	public void cliqueBotaoCancelar(ComboBox<String> comboBoxConsultasMarcadas) {
 		consultaDAO.cliqueBotaoCancelar(comboBoxConsultasMarcadas);
+	}
+	
+	public void initializeEscolherConsultaAvaliar(ChoiceBox<String> choiceBoxConsultas) {
+		consultaDAO.initializeEscolherConsultaAvaliar(choiceBoxConsultas);
+	}
+	
+	public void initializeEscolherConsultaRealizar(ChoiceBox<String> choiceBoxConsultasRealizar) {
+		consultaDAO.initializeEscolherConsultaRealizar(choiceBoxConsultasRealizar);
 	}
 }

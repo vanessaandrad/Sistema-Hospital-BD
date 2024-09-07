@@ -1,6 +1,7 @@
 package DAO;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,14 +10,24 @@ import java.time.LocalDate;
 
 import gui.util.Alerts;
 import guiControllers.EscolherConsultaAvaliarController;
+import guiControllers.TelaLoginMedicoController;
 import guiControllers.TelaLoginPacienteController;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.util.Callback;
 
 public class ConsultaDAO {
+
+	//private ChoiceBox<String> choiceBoxConsultas;
+
+	public static String cpfPacienteDaConsulta;
+
+	public static int idConsultaEscolhida;
+
+	public static Date dataEscolhida;
 
 	public void initializeAgendarConsulta(ComboBox<String> comboBoxMedicosDisponiveis, DatePicker datePickerDatas) {
 		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
@@ -250,7 +261,7 @@ public class ConsultaDAO {
 		}
 	}
 
-	public void initializeCancelarConsulta(ComboBox<String> comboBoxConsultasMarcadas) {	
+	public void initializeCancelarConsulta(ComboBox<String> comboBoxConsultasMarcadas) {
 		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
 		String username = "root";
 		String password = "86779791";
@@ -415,6 +426,63 @@ public class ConsultaDAO {
 				e.printStackTrace();
 				return false;
 			}
+		}
+	}
+
+	public void initializeEscolherConsultaAvaliar(ChoiceBox<String> choiceBoxConsultas) {
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String username = "root";
+		String password = "86779791";
+
+		String selectQuery = "SELECT * FROM consultasrealizadas WHERE cpf_paciente = ? AND estrelas = ?";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			preparedStatement.setString(1, TelaLoginPacienteController.getcpfLogado());
+			preparedStatement.setDouble(2, 0);
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					int idConsulta = resultSet.getInt("id");
+					Date dataConsulta = resultSet.getDate("dataConsulta");
+					String infoConsulta = "Nº consulta: " + idConsulta + " - " + "Data: " + dataConsulta;
+					choiceBoxConsultas.getItems().addAll(infoConsulta);
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+			}
+
+		} catch (SQLException e) {
+			e.getMessage();
+		}
+	}
+
+	public void initializeEscolherConsultaRealizar(ChoiceBox<String> choiceBoxConsultas) {
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String username = "root";
+		String password = "86779791";
+
+		String selectQuery = "SELECT * FROM consultas WHERE crm_Medico = ? AND realizada = ?";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			preparedStatement.setString(1, TelaLoginMedicoController.getcrmLogado());
+			preparedStatement.setString(2, "n");
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				while (resultSet.next()) {
+					String cpfPaciente = resultSet.getString("cpf_paciente");
+					idConsultaEscolhida = resultSet.getInt("id");
+					String data = resultSet.getString("dataConsulta");
+					dataEscolhida = resultSet.getDate("dataConsulta");
+					String infoConsulta = "CPF do paciente: " + cpfPaciente + " - " + data;
+					choiceBoxConsultas.getItems().add(infoConsulta);
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+			}
+		} catch (SQLException e) {
+			e.getMessage();
 		}
 	}
 }

@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import DAO.ConsultaDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -42,7 +44,7 @@ public class RealizarConsultaController {
 		try (Connection connection = DriverManager.getConnection(url, username, password);
 				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
-			preparedStatement.setString(1, EscolherConsultaRealizarController.cpfPacienteDaConsulta);
+			preparedStatement.setString(1, ConsultaDAO.cpfPacienteDaConsulta);
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
@@ -74,7 +76,7 @@ public class RealizarConsultaController {
 		try (Connection connection = DriverManager.getConnection(url, username, password);
 				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
-			preparedStatement.setString(1, EscolherConsultaRealizarController.cpfPacienteDaConsulta);
+			preparedStatement.setString(1, ConsultaDAO.cpfPacienteDaConsulta);
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
@@ -108,10 +110,10 @@ public class RealizarConsultaController {
 		try (Connection connection = DriverManager.getConnection(url, username, password);
 				PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
-			preparedStatement.setInt(1, EscolherConsultaRealizarController.idConsultaEscolhida);
+			preparedStatement.setInt(1, ConsultaDAO.idConsultaEscolhida);
 			preparedStatement.setString(2, TelaLoginMedicoController.getcrmLogado());
-			preparedStatement.setString(3, EscolherConsultaRealizarController.cpfPacienteDaConsulta);
-			preparedStatement.setDate(4, EscolherConsultaRealizarController.dataEscolhida);
+			preparedStatement.setString(3, ConsultaDAO.cpfPacienteDaConsulta);
+			preparedStatement.setDate(4, ConsultaDAO.dataEscolhida);
 			preparedStatement.setDouble(5, valorConsulta);
 			preparedStatement.setString(6, "");
 			preparedStatement.setDouble(7, 0);
@@ -140,7 +142,7 @@ public class RealizarConsultaController {
 				PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
 			preparedStatement.setString(1, "s");
-			preparedStatement.setInt(2, EscolherConsultaRealizarController.idConsultaEscolhida);
+			preparedStatement.setInt(2, ConsultaDAO.idConsultaEscolhida);
 
 			int rowsAffected5 = preparedStatement.executeUpdate();
 
