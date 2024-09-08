@@ -41,8 +41,9 @@ public class PacienteService {
 			TableView<Consulta> tableViewRelatorio) {
 		pacienteDAO.cliqueBotaoGerarRelatorioAgendamentos(inicio, fim, lista, tableViewRelatorio);
 	}
-	
+	/*
 	public void procurarMedicos(String dado, ListView<String> listViewResultados, ChoiceBox<String> choiceBoxEscolha) {
 		pacienteDAO.procurarMedicos(dado, listViewResultados, choiceBoxEscolha);
 	}
+	*/
 }

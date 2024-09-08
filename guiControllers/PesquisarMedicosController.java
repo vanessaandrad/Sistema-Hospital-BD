@@ -32,8 +32,10 @@ public class PesquisarMedicosController {
 		choiceBoxEscolha.getItems().setAll("Nome", "Especialidade");
 	}
 
+	/*
 	public void procurarMedicos() {
 		String dado = textFieldDado.getText();
 		pacienteService.procurarMedicos(dado, listViewResultados, choiceBoxEscolha);
 	}
+	*/
 }

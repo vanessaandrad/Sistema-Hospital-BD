@@ -4,6 +4,7 @@ import DAO.ConsultaDAO;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
 
 public class ConsultaService {
 	private ConsultaDAO consultaDAO;
@@ -46,5 +47,14 @@ public class ConsultaService {
 	
 	public void initializeEscolherConsultaRealizar(ChoiceBox<String> choiceBoxConsultasRealizar) {
 		consultaDAO.initializeEscolherConsultaRealizar(choiceBoxConsultasRealizar);
+	}
+	
+	public void initializeRealizarConsulta(TextField textFieldPreco) {
+		consultaDAO.initializeRealizarConsulta(textFieldPreco);
+	}
+	
+	public boolean cliqueBotaoFinalizarConsulta(TextField textFieldPreco, String sintomas, String tratamento,
+			String medicamentos, String exames) {
+		return consultaDAO.cliqueBotaoFinalizarConsulta(textFieldPreco, sintomas, tratamento, medicamentos, exames);
 	}
 }

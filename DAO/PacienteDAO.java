@@ -305,7 +305,7 @@ public class PacienteDAO {
 
 	
 	//FALTA FAZER FUNCIONAR
-	public void procurarMedicos(String dado, ListView<String> listViewResultados, ChoiceBox<String> choiceBoxEscolha) {
+	public void procurarMedicosPorNome(String dado, ListView<String> listViewResultados, ChoiceBox<String> choiceBoxEscolha) {
 		String selectQuery = null;
 
 		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
@@ -339,10 +339,9 @@ public class PacienteDAO {
 					}
 				}
 
-				String selectDetailsQuery = "SELECT * FROM medicoscadastrados WHERE nome = ? OR especialidade = ?";
+				String selectDetailsQuery = "SELECT * FROM medicoscadastrados WHERE nome = ?";
 				try (PreparedStatement preparedStatementDetails = connection.prepareStatement(selectDetailsQuery)) {
 					preparedStatementDetails.setString(1, dado);
-					preparedStatementDetails.setString(2, dado);
 
 					try (ResultSet resultSetDetails = preparedStatementDetails.executeQuery()) {
 						List<String> listaMedicos = new ArrayList<>();
@@ -483,4 +482,66 @@ public class PacienteDAO {
 			}
 		}
 	}
+	/*
+	public void procurarMedicosPorEspecialidade(String dado, ListView<String> listViewResultados, ChoiceBox<String> choiceBoxEscolha) {
+		String selectQuery = null;
+
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String username = "root";
+		String password = "86779791";
+
+		Connection connection = null;
+		
+		selectQuery = "SELECT crm_Medico, AVG(estrelas) AS notaMedia, GROUP_CONCAT(textoAvaliacao) AS comentarios FROM consultas GROUP BY crm_Medico";
+
+		connection = DriverManager.getConnection(url, username, password);
+
+		Map<String, Double> notaMediaMap = new HashMap<>();
+		Map<String, List<String>> comentariosMap2 = new HashMap<>();
+
+		try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+				ResultSet resultSet = preparedStatement.executeQuery()) {
+
+			while (resultSet.next()) {
+				String crmMedico = resultSet.getString("crm_Medico");
+				double notaMedia = resultSet.getDouble("notaMedia");
+				String comentario = resultSet.getString("textoAvaliacao");
+				List<String> listaComentarios2 = comentariosMap2.computeIfAbsent(crmMedico,
+						k -> new ArrayList<>());
+				listaComentarios2.add(comentario);
+
+				notaMediaMap.put(crmMedico, notaMedia);
+			}
+		}
+
+		String selectDetailsQuery = "SELECT * FROM medicoscadastrados WHERE plano_atendido = ? AND especialidade = ? ";
+		try (PreparedStatement preparedStatementDetails = connection.prepareStatement(selectDetailsQuery)) {
+			preparedStatementDetails.setString(1, TelaLoginPacienteController.getPlanoLogado());
+			preparedStatementDetails.setString(2, dado);
+
+			try (ResultSet resultSetDetails = preparedStatementDetails.executeQuery()) {
+				List<String> listaMedicos = new ArrayList<>();
+				while (resultSetDetails.next()) {
+					String crm = resultSetDetails.getString("crm");
+					String nomeMedico = resultSetDetails.getString("nome");
+					String especialidadeMedico = resultSetDetails.getString("especialidade");
+
+					double notaMedia = notaMediaMap.getOrDefault(crm, 0.0);
+					List<String> listaComentarios2 = comentariosMap2.getOrDefault(crm, new ArrayList<>());
+					String StringNotaMedia = String.format("%.1f", notaMedia);
+					String nomeEspecialidade = "Nome: " + nomeMedico + " - " + "Especialidade: "
+							+ especialidadeMedico + " - " + "Nota média: " + StringNotaMedia + " - "
+							+ "Comentários: " + String.join(", ", listaComentarios2);
+
+					listaMedicos.add(nomeEspecialidade);
+				}
+				listViewResultados.getItems().setAll(listaMedicos);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	*/
 }

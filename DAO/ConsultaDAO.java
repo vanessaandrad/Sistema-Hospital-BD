@@ -17,11 +17,12 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
 public class ConsultaDAO {
 
-	//private ChoiceBox<String> choiceBoxConsultas;
+	// private ChoiceBox<String> choiceBoxConsultas;
 
 	public static String cpfPacienteDaConsulta;
 
@@ -202,7 +203,7 @@ public class ConsultaDAO {
 			datePickerDatas.setValue(null);
 		}
 
-		String insertQuery = "INSERT INTO consultas (crm_Medico, cpf_paciente, dataConsulta, realizada) VALUES (?, ?, ?, ?)";
+		String insertQuery = "INSERT INTO consultas (crm_Medico, cpf_paciente, dataConsulta, realizada, valorConsulta) VALUES (?, ?, ?, ?, ?)";
 
 		try (Connection connection = DriverManager.getConnection(url, username, password);
 				PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
@@ -211,6 +212,7 @@ public class ConsultaDAO {
 			preparedStatement.setString(2, cpfPaciente);
 			preparedStatement.setDate(3, dataEscolhida);
 			preparedStatement.setString(4, "n");
+			preparedStatement.setDouble(5, 0);
 
 			int rowsAffected = preparedStatement.executeUpdate();
 
@@ -483,6 +485,108 @@ public class ConsultaDAO {
 			}
 		} catch (SQLException e) {
 			e.getMessage();
+		}
+	}
+
+	public void initializeRealizarConsulta(TextField textFieldPreco) {
+		String url = "jdbc:mysql://localhost:3306/hospital";
+		String username = "root";
+		String password = "86779791";
+
+		String planoDoPaciente = null;
+
+		String selectQuery = "SELECT plano FROM pacientes WHERE cpf = ? ";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			preparedStatement.setString(1, ConsultaDAO.cpfPacienteDaConsulta);
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					planoDoPaciente = resultSet.getString("plano");
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+			}
+
+		} catch (SQLException e) {
+			e.getMessage();
+		}
+
+		if (planoDoPaciente == null) {
+			textFieldPreco.setDisable(false);
+		} else {
+			textFieldPreco.setDisable(true);
+		}
+	}
+
+	public boolean cliqueBotaoFinalizarConsulta(TextField textFieldPreco, String sintomas, String tratamento,
+			String medicamentos, String exames) {
+		String url = "jdbc:mysql://localhost:3306/hospital";
+		String username = "root";
+		String password = "86779791";
+
+		String planoPaciente = null;
+
+		String selectQuery = "SELECT plano FROM pacientes WHERE cpf = ? ";
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
+			preparedStatement.setString(1, ConsultaDAO.cpfPacienteDaConsulta);
+
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					planoPaciente = resultSet.getString("plano");
+				}
+			} catch (SQLException e) {
+				e.getMessage();
+			}
+
+		} catch (SQLException e) {
+			e.getMessage();
+		}
+
+		double valorConsulta;
+
+		if (planoPaciente == null) {
+			String preco = textFieldPreco.getText();
+			valorConsulta = Double.parseDouble(preco);
+		} else {
+			valorConsulta = 0;
+		}
+
+		String updateQuery = "UPDATE consultas SET crm_Medico = ?, cpf_paciente = ?, dataConsulta = ?, realizada = ?, valorConsulta = ?, textoAvaliacao = ?, estrelas = ?, sintomas = ?, tratamento = ?, exames = ?, medicamentos = ? "
+				+ "WHERE id = ?";
+
+		try (Connection connection = DriverManager.getConnection(url, username, password);
+				PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
+
+			preparedStatement.setString(1, TelaLoginMedicoController.getcrmLogado());
+			preparedStatement.setString(2, ConsultaDAO.cpfPacienteDaConsulta);
+			preparedStatement.setDate(3, ConsultaDAO.dataEscolhida);
+			preparedStatement.setString(4, "s");
+			preparedStatement.setDouble(5, valorConsulta);
+			preparedStatement.setString(6, "");
+			preparedStatement.setDouble(7, 0);
+			preparedStatement.setString(8, sintomas);
+			preparedStatement.setString(9, tratamento);
+			preparedStatement.setString(10, exames);
+			preparedStatement.setString(11, medicamentos);
+			preparedStatement.setInt(12, ConsultaDAO.idConsultaEscolhida);
+
+			int rowsAffected = preparedStatement.executeUpdate();
+
+			if (rowsAffected > 0) {
+				System.out.println("cosnulta add as realizas");
+				return true;
+			} else {
+				System.out.println("consultas naaaaaaaao add as realizasd");
+				return false;
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 }
