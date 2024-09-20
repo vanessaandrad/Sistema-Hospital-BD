@@ -54,7 +54,7 @@ public class MenuMedicoController {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/guiFXML/EscolherConsultaRealizar.fxml"));
 			Parent root = loader.load();
-
+			
 			Stage stage = new Stage();
 			stage.setTitle("Escolha de consulta");
 

@@ -1,11 +1,10 @@
 package Service;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import DAO.PacienteDAO;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import model.entities.Consulta;
 
@@ -20,8 +19,8 @@ public class PacienteService {
 		return pacienteDAO.cpfExiste(cpf);
 	}
 
-	public boolean cadastrarPaciente(String nome, String idade, String senha, String cpf, String plano) {
-		return pacienteDAO.realizarCadastroPaciente(nome, idade, senha, cpf, plano);
+	public boolean cadastrarPaciente(String nome, LocalDate data_nascimento, String senha, String cpf, String plano) {
+		return pacienteDAO.realizarCadastroPaciente(nome, data_nascimento, senha, cpf, plano);
 	}
 
 	public boolean fazerLogin(String cpf, String senha) {
@@ -42,8 +41,8 @@ public class PacienteService {
 		pacienteDAO.cliqueBotaoGerarRelatorioAgendamentos(inicio, fim, lista, tableViewRelatorio);
 	}
 	/*
-	public void procurarMedicos(String dado, ListView<String> listViewResultados, ChoiceBox<String> choiceBoxEscolha) {
-		pacienteDAO.procurarMedicos(dado, listViewResultados, choiceBoxEscolha);
-	}
-	*/
+	 * public void procurarMedicos(String dado, ListView<String> listViewResultados,
+	 * ChoiceBox<String> choiceBoxEscolha) { pacienteDAO.procurarMedicos(dado,
+	 * listViewResultados, choiceBoxEscolha); }
+	 */
 }

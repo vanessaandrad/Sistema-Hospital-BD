@@ -7,6 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import gui.util.Alerts;
 import guiControllers.TelaLoginMedicoController;
 import javafx.collections.ObservableList;
@@ -57,6 +59,8 @@ public class MedicoDAO {
 			return false;
 		}
 
+		String senhaCriptografada = BCrypt.hashpw(senha, BCrypt.gensalt());
+
 		String insertQuery = "INSERT INTO medicoscadastrados (nome, especialidade, plano_atendido, senha, crm)"
 				+ " VALUES (?, ?, ?, ?, ?)";
 
@@ -66,7 +70,7 @@ public class MedicoDAO {
 			preparedStatement.setString(1, nome);
 			preparedStatement.setString(2, especialidade);
 			preparedStatement.setString(3, planoAtendido);
-			preparedStatement.setString(4, senha);
+			preparedStatement.setString(4, senhaCriptografada);
 			preparedStatement.setString(5, crm);
 
 			int rowsAffected = preparedStatement.executeUpdate();
@@ -87,18 +91,24 @@ public class MedicoDAO {
 		String username = "root";
 		String password = "86779791";
 
-		String selectQuery = "SELECT * FROM medicoscadastrados WHERE senha = ? AND crm = ?";
+		String selectQuery = "SELECT * FROM medicoscadastrados WHERE crm = ?";
 
 		try (Connection connection = DriverManager.getConnection(url, username, password);
 				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
-			preparedStatement.setString(1, senha);
-			preparedStatement.setString(2, crm);
+			preparedStatement.setString(1, crm);
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
-					TelaLoginMedicoController.crmLogado = crm;
-					return true;
+					String senhaCriptografada = resultSet.getString("senha");
+
+					if (BCrypt.checkpw(senha, senhaCriptografada)) {
+						TelaLoginMedicoController.crmLogado = crm;
+						return true;
+					} else {
+						Alerts.showAlert("Login inválido", null, "Senha incorreta", AlertType.ERROR);
+						return false;
+					}
 				} else {
 					Alerts.showAlert("Login inválido", null, "Usuário não encontrado", AlertType.ERROR);
 					return false;
@@ -191,7 +201,7 @@ public class MedicoDAO {
 				Alerts.showAlert("Erro!", "Esse CRM já está cadastrado", "", AlertType.ERROR);
 				return;
 			} else {
-				String updateQuery = "UPDATE medicoscadastrados SET senha = ? WHERE crm = ?";
+				String updateQuery = "UPDATE medicoscadastrados SET crm = ? WHERE crm = ?";
 				try (Connection connection = DriverManager.getConnection(url, username, password);
 						PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
@@ -215,11 +225,12 @@ public class MedicoDAO {
 			}
 			return;
 		} else if (campoSelecionado == "senha") {
+			String senhaCriptografada = BCrypt.hashpw(dadoNovo, BCrypt.gensalt());
 			String updateQuery = "UPDATE medicoscadastrados SET senha = ? WHERE crm = ?";
 			try (Connection connection = DriverManager.getConnection(url, username, password);
 					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
-				preparedStatement.setString(1, dadoNovo);
+				preparedStatement.setString(1, senhaCriptografada);
 				preparedStatement.setString(2, TelaLoginMedicoController.getcrmLogado());
 
 				int rowsAffected = preparedStatement.executeUpdate();

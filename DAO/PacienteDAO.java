@@ -1,11 +1,13 @@
 package DAO;
 
+import org.mindrot.jbcrypt.BCrypt;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,7 @@ import model.entities.Consulta;
 public class PacienteDAO {
 
 	public boolean cpfExiste(String cpfDigitado) {
-		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
+		String url = "jdbc:mysql://localhost:3306/trabalho_hospital?useSSL=false";
 		String username = "root";
 		String password = "86779791";
 
@@ -44,9 +46,9 @@ public class PacienteDAO {
 		}
 	}
 
-	public boolean realizarCadastroPaciente(String nome, String idade, String senha, String cpf, String plano) {
+	public boolean realizarCadastroPaciente(String nome, LocalDate data_nascimento, String senha, String cpf, String plano) {
 
-		String url = "jdbc:mysql://localhost:3306/hospital";
+		String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
 		String username = "root";
 		String password = "86779791";
 
@@ -54,16 +56,19 @@ public class PacienteDAO {
 			Alerts.showAlert("ERRO!", "CPF JÁ EXISTENTE!", "Tente novamente!", AlertType.ERROR);
 			return false;
 		}
-		String insertQuery = "INSERT INTO pacientes (cpf, nome, idade, senha, plano) VALUES (?, ?, ?, ?, ?)";
+		
+		String senhaCriptografada = BCrypt.hashpw(senha, BCrypt.gensalt());
+		
+		String insertQuery = "INSERT INTO pacientes (cpf, nome, data_nascimento, plano, senha) VALUES (?, ?, ?, ?, ?)";
 
 		try (Connection connection = DriverManager.getConnection(url, username, password);
 				PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
 			preparedStatement.setString(1, cpf);
 			preparedStatement.setString(2, nome);
-			preparedStatement.setString(3, idade);
-			preparedStatement.setString(4, senha);
-			preparedStatement.setString(5, plano);
+			preparedStatement.setDate(3, java.sql.Date.valueOf(data_nascimento));
+			preparedStatement.setString(4, plano);
+			preparedStatement.setString(5, senhaCriptografada);
 
 			int rowsAffected = preparedStatement.executeUpdate();
 
@@ -79,34 +84,37 @@ public class PacienteDAO {
 	}
 
 	public boolean fazerLogin(String cpf, String senha) {
-		String url = "jdbc:mysql://localhost:3306/hospital";
-		String username = "root";
-		String password = "86779791";
+	    String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
+	    String username = "root";
+	    String password = "86779791";
 
-		String selectQuery = "SELECT * FROM pacientes WHERE cpf = ? AND senha = ?";
+	    String selectQuery = "SELECT * FROM pacientes WHERE cpf = ?";
 
-		try (Connection connection = DriverManager.getConnection(url, username, password);
-				PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+	    try (Connection connection = DriverManager.getConnection(url, username, password);
+	         PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
 
-			preparedStatement.setString(1, cpf);
-			preparedStatement.setString(2, senha);
+	        preparedStatement.setString(1, cpf);
 
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				if (resultSet.next()) {
-					TelaLoginPacienteController.cpfLogado = cpf;
-					TelaLoginPacienteController.planoLogado = resultSet.getString("plano");
-					return true;
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		Alerts.showAlert("Login inválido", null, "Tente novamente!", AlertType.ERROR);
-		return false;
+	        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+	            if (resultSet.next()) {
+	                String senhaHashed = resultSet.getString("senha");
+	                if (BCrypt.checkpw(senha, senhaHashed)) {
+	                    TelaLoginPacienteController.cpfLogado = cpf;
+	                    TelaLoginPacienteController.planoLogado = resultSet.getString("plano");
+	                    return true;
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    Alerts.showAlert("Login inválido", null, "Tente novamente!", AlertType.ERROR);
+	    return false;
 	}
 
 	public void editarDado(String campoSelecionado, String dadoNovo) {
-		String url = "jdbc:mysql://localhost:3306/hospital";
+		String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
 		String username = "root";
 		String password = "86779791";
 
@@ -135,8 +143,8 @@ public class PacienteDAO {
 			return;
 		}
 
-		else if (campoSelecionado == "idade") {
-			String updateQuery = "UPDATE pacientes SET idade = ? WHERE cpf = ?";
+		else if (campoSelecionado == "data_nascimento") {
+			String updateQuery = "UPDATE pacientes SET data_nascimento = ? WHERE cpf = ?";
 			try (Connection connection = DriverManager.getConnection(url, username, password);
 					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
@@ -182,11 +190,12 @@ public class PacienteDAO {
 			}
 			return;
 		} else if (campoSelecionado == "senha") {
+			String senhaCriptografada = BCrypt.hashpw(dadoNovo, BCrypt.gensalt());
 			String updateQuery = "UPDATE pacientes SET senha = ? WHERE cpf = ?";
 			try (Connection connection = DriverManager.getConnection(url, username, password);
 					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
-				preparedStatement.setString(1, dadoNovo);
+				preparedStatement.setString(1, senhaCriptografada);
 				preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
 
 				int rowsAffected = preparedStatement.executeUpdate();
@@ -240,7 +249,7 @@ public class PacienteDAO {
 
 	public void cliqueBotaoGerarRelatorioConsultasRealizadas(Date inicio, Date fim, ObservableList<Consulta> lista,
 			TableView<Consulta> tableViewRelatorio) {
-		String url = "jdbc:mysql://localhost:3306/hospital";
+		String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
 		String username = "root";
 		String password = "86779791";
 
