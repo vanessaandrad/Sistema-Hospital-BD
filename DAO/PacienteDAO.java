@@ -1,6 +1,5 @@
 package DAO;
 
-import org.mindrot.jbcrypt.BCrypt;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -8,24 +7,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 import gui.util.Alerts;
 import guiControllers.TelaLoginPacienteController;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import model.entities.Consulta;
 
 public class PacienteDAO {
 
 	public boolean cpfExiste(String cpfDigitado) {
-		String url = "jdbc:mysql://localhost:3306/trabalho_hospital?useSSL=false";
+		String url = "jdbc:mysql://localhost:3306/hospital?useSSL=false";
 		String username = "root";
 		String password = "86779791";
 
@@ -48,7 +43,7 @@ public class PacienteDAO {
 
 	public boolean realizarCadastroPaciente(String nome, LocalDate data_nascimento, String senha, String cpf, String plano) {
 
-		String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
+		String url = "jdbc:mysql://localhost:3306/hospital";
 		String username = "root";
 		String password = "86779791";
 
@@ -84,7 +79,7 @@ public class PacienteDAO {
 	}
 
 	public boolean fazerLogin(String cpf, String senha) {
-	    String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
+	    String url = "jdbc:mysql://localhost:3306/hospital";
 	    String username = "root";
 	    String password = "86779791";
 
@@ -113,8 +108,8 @@ public class PacienteDAO {
 	    return false;
 	}
 
-	public void editarDado(String campoSelecionado, String dadoNovo) {
-		String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
+	public void editarDado(String campoSelecionado, String dadoNovo, LocalDate data_nascimento_nova) {
+		String url = "jdbc:mysql://localhost:3306/hospital";
 		String username = "root";
 		String password = "86779791";
 
@@ -148,7 +143,8 @@ public class PacienteDAO {
 			try (Connection connection = DriverManager.getConnection(url, username, password);
 					PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
-				preparedStatement.setString(1, dadoNovo);
+				java.sql.Date dataNascimentoSQL = java.sql.Date.valueOf(data_nascimento_nova);
+				preparedStatement.setDate(1, dataNascimentoSQL);
 				preparedStatement.setString(2, TelaLoginPacienteController.getcpfLogado());
 
 				int rowsAffected = preparedStatement.executeUpdate();
@@ -249,7 +245,7 @@ public class PacienteDAO {
 
 	public void cliqueBotaoGerarRelatorioConsultasRealizadas(Date inicio, Date fim, ObservableList<Consulta> lista,
 			TableView<Consulta> tableViewRelatorio) {
-		String url = "jdbc:mysql://localhost:3306/trabalho_hospital";
+		String url = "jdbc:mysql://localhost:3306/hospital";
 		String username = "root";
 		String password = "86779791";
 
@@ -314,6 +310,7 @@ public class PacienteDAO {
 
 	
 	//FALTA FAZER FUNCIONAR
+	/*
 	public void procurarMedicosPorNome(String dado, ListView<String> listViewResultados, ChoiceBox<String> choiceBoxEscolha) {
 		String selectQuery = null;
 

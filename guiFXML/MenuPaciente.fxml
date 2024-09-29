@@ -18,12 +18,7 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-		<Button fx:id="botaoEditarDados" layoutX="369.0" layoutY="423.0" mnemonicParsing="false" onAction="#cliqueBotaoEditarDados" style="-fx-background-color: #39A7FF;" text="EDITAR DADOS" textFill="WHITE">
-			<cursor>
-				<Cursor fx:constant="HAND" />
-			</cursor>
-		</Button>
-		<Button fx:id="botaoPesquisarMedicos" layoutX="357.0" layoutY="318.0" mnemonicParsing="false" onAction="#cliqueBotaoPesquisarMedicos" style="-fx-background-color: #39A7FF;" text="PESQUISAR MÉDICO" textFill="WHITE">
+		<Button fx:id="botaoEditarDados" layoutX="370.0" layoutY="361.0" mnemonicParsing="false" onAction="#cliqueBotaoEditarDados" style="-fx-background-color: #39A7FF;" text="EDITAR DADOS" textFill="WHITE">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>
@@ -33,7 +28,7 @@
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
-		<Button fx:id="botaoAvaliarConsulta" layoutX="363.0" layoutY="372.0" mnemonicParsing="false" onAction="#cliqueBotaoAvaliarConsulta" style="-fx-background-color: #39A7FF;" text="AVALIAR MÉDICO" textFill="WHITE">
+		<Button fx:id="botaoAvaliarConsulta" layoutX="364.0" layoutY="315.0" mnemonicParsing="false" onAction="#cliqueBotaoAvaliarConsulta" style="-fx-background-color: #39A7FF;" text="AVALIAR MÉDICO" textFill="WHITE">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>

@@ -27,8 +27,8 @@ public class PacienteService {
 		return pacienteDAO.fazerLogin(cpf, senha);
 	}
 
-	public void editarDado(String campoSelecionado, String dadoNovo) {
-		pacienteDAO.editarDado(campoSelecionado, dadoNovo);
+	public void editarDado(String campoSelecionado, String dadoNovo, LocalDate data_nascimento_nova) {
+		pacienteDAO.editarDado(campoSelecionado, dadoNovo, data_nascimento_nova);
 	}
 
 	public void cliqueBotaoGerarRelatorioConsultasRealizadas(Date inicio, Date fim, ObservableList<Consulta> lista,

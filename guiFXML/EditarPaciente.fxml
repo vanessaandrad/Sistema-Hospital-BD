@@ -2,6 +2,7 @@
 
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
@@ -18,7 +19,7 @@
 				<Font size="13.0" />
 			</font>
 		</RadioButton>
-		<RadioButton fx:id="radioButtonIdade" layoutX="360.0" layoutY="237.0" mnemonicParsing="false" text="Idade">
+		<RadioButton fx:id="radioButtonIdade" layoutX="360.0" layoutY="237.0" mnemonicParsing="false" text="Data de nascimento">
 			<font>
 				<Font size="13.0" />
 			</font>
@@ -38,14 +39,14 @@
 				<Font size="13.0" />
 			</font>
 		</RadioButton>
-		<TextField fx:id="textFieldEditar" layoutX="121.0" layoutY="263.0" />
+		<TextField fx:id="textFieldEditar" layoutX="120.0" layoutY="205.0" />
 		<Button fx:id="botaoEditar" layoutX="272.0" layoutY="406.0" mnemonicParsing="false" onAction="#editarDado" style="-fx-background-color: #39A7FF;" text="EDITAR" textFill="WHITE">
 			<cursor>
 				<Cursor fx:constant="HAND" />
 			</cursor>
 		</Button>
 		<Label fx:id="labelMensagem" layoutX="256.0" layoutY="444.0" />
-		<Text fill="#124991" layoutX="123.0" layoutY="252.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Digite o novo dado:">
+		<Text fill="#124991" layoutX="130.0" layoutY="198.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Digite o novo dado:">
 			<font>
 				<Font name="System Bold" size="14.0" />
 			</font>
@@ -70,5 +71,7 @@
 				<Image url="@../../../../../Downloads/logo.png" />
 			</image>
 		</ImageView>
+      <DatePicker fx:id="DatePickerEditar" layoutX="94.0" layoutY="312.0" />
+      <Label layoutX="-22.0" layoutY="287.0" text="Caso deseje editar a data de nascimento, selecione a nova data abaixo:" />
 	</children>
 </AnchorPane>
